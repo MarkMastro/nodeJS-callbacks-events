@@ -1,11 +1,11 @@
 const express = require('express');
-const port = 3000;
-const app = express();
 const EventEmitter = require('events');
+const { builtinModules } = require('module');
+
+async function app(args) {
 //create instance of event emitter
 const emitter = new EventEmitter();
-//take in arguments from terminal
-const arguments = process.argv.splice(2);
+//take in args from terminal
 //gets called by event listener function, returns the sum of the multiples under 1000
 const getMultiplesSum= (numbers) => {
     let nums = [parseInt(numbers[0]), parseInt(numbers[1])]
@@ -21,14 +21,25 @@ const getMultiplesSum= (numbers) => {
     return sum;
 }
 
-//calls getMultiplesSum with the arguments passed from terminal, logs the arguments and their sum of multiples under 1000, after 2 seconds
-function logInfo(arguments) {
-    const sum = getMultiplesSum(arguments)
-    setTimeout(()=>console.log(`Multiples of ${arguments[0]} ${arguments[1]} ${sum}`), 2000)
+//calls getMultiplesSum with the args passed from terminal, logs the args and their sum of multiples under 1000, after 2 seconds
+async function  logInfo(args)  {
+    const sum = getMultiplesSum(args)
+    return new Promise (resolve =>{
+        setTimeout(()=>{
+            console.log(`Multiples of ${args[0]} ${args[1]} ${sum}`)
+        }
+        , 2000)
+    }) 
 }
-//make an event listener which calls logInfo with the arguments passed from terminal when event called MyEvent is created
+//make an event listener which calls logInfo with the args passed from terminal when event called MyEvent is created
 emitter.on('MyEvent', logInfo)
 
-//emit the event MyEvent with the arguments passed from the terminal
+//emit the event MyEvent with the args passed from the terminal
 
-emitter.emit('MyEvent', arguments)
+emitter.emit('MyEvent', args)
+}
+
+module.exports = app;
+
+
+
